@@ -122,7 +122,7 @@ right:40px;
 
 <div class="card">
 
-<img src="{{ url_for('static', filename='uploads/' + imgs[0].strip()) }}"
+<img src="{{ imgs[0].strip() }}"
      class="product-img"
      onclick="openViewer('{{ item[5] }}')">
 
@@ -177,7 +177,7 @@ index = 0
 
 document.getElementById("imageViewer").style.display="block"
 
-document.getElementById("viewerImg").src="/static/uploads/"+images[index].trim()
+document.getElementById("viewerImg").src=images[index].trim()
 
 
 }
@@ -200,7 +200,7 @@ if(index>=images.length){
 index=0
 }
 
-document.getElementById("viewerImg").src="/static/uploads/"+images[index].trim()
+document.getElementById("viewerImg").src=images[index].trim()
 
 
 }

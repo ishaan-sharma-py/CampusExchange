@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, session
 from flask_socketio import SocketIO, send
 import sqlite3
 import os
+import cloudinary
+import cloudinary.uploader
 
 
 app = Flask(__name__)
@@ -10,6 +12,12 @@ socketio = SocketIO(app)
 
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+cloudinary.config(
+    cloud_name="dz830khhh",
+    api_key="331372578728144",
+    api_secret="C8NABLICiVuqfqVCrDobU7leAK4"
+)
 
 ACCESS_CODE = "admin123"
 
@@ -90,11 +98,16 @@ def upload():
 
                 filename = file.filename
 
-                filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+              # filepath = os.path.join(app.config["UPLOAD_FOLDER"], filename)
 
-                file.save(filepath)
+              # file.save(filepath)
 
-                image_names.append(filename)
+              # image_names.append(filename)
+
+            upload_result = cloudinary.uploader.upload(file)
+            image_url = upload_result["secure_url"]
+
+            image_names.append(image_url)
 
         images_string = ",".join(image_names)
 
