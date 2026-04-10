@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-from flask_socketio import SocketIO, send
+#from flask_socketio import SocketIO, send
 import os
 import cloudinary
 import cloudinary.uploader
@@ -38,7 +38,7 @@ def get_connection():
 # ---------- APP ----------
 app = Flask(__name__)
 app.secret_key = "campus_exchange_secret"
-socketio = SocketIO(app)
+# socketio = SocketIO(app)
 
 UPLOAD_FOLDER = "static/uploads"
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
@@ -69,7 +69,8 @@ def init_db():
     conn.close()
 
 # Run once
-init_db()
+if ENV == "local":
+    init_db()
 
 # ---------- HOME ----------
 @app.route("/")
@@ -172,14 +173,14 @@ def manage():
     return render_template("manage.html", items=items)
 
 # ---------- CHAT ----------
-@app.route("/chat")
-def chat():
-    return render_template("chat.html")
-
-@socketio.on("message")
-def handle_message(msg):
-    send(msg, broadcast=True)
+#@app.route("/chat")
+#def chat():
+#    return render_template("chat.html")
+#
+#@socketio.on("message")
+#def handle_message(msg):
+#   send(msg, broadcast=True)
 
 # ---------- RUN ----------
-if __name__ == "__main__":
-    socketio.run(app, debug=(ENV == "local"))
+#if __name__ == "__main__":
+#    socketio.run(app, debug=(ENV == "local"))
