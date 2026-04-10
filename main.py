@@ -11,32 +11,26 @@ load_dotenv()
 
 # ---------- ENV CONFIG ----------
 ENV = os.getenv("ENV", "local")
-
-DATABASE_URL_LOCAL = os.getenv("DATABASE_URL_LOCAL")
-DATABASE_URL_RENDER = os.getenv("DATABASE_URL_RENDER")
-
-if ENV == "local":
-    DATABASE_URL = DATABASE_URL_LOCAL
-else:
-    DATABASE_URL = DATABASE_URL_RENDER
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 print("ENV:", ENV)
 print("Using DB:", DATABASE_URL)
 
-# ---------- CLOUDINARY CONFIG ----------
-cloudinary.config(
-    cloud_name=os.getenv("CLOUD_NAME"),
-    api_key=os.getenv("API_KEY"),
-    api_secret=os.getenv("API_SECRET")
-)
+# ---------- CLOUDINARY CONFIG (ONLY PROD) ----------
+if ENV == "production":
+    cloudinary.config(
+        cloud_name=os.getenv("CLOUD_NAME"),
+        api_key=os.getenv("API_KEY"),
+        api_secret=os.getenv("API_SECRET")
+    )
 
 # ---------- DB CONNECTION ----------
 def get_connection():
     try:
-        if ENV == "local":
-            return psycopg2.connect(DATABASE_URL)
-        else:
+        if ENV == "production":
             return psycopg2.connect(DATABASE_URL, sslmode='require')
+        else:
+            return psycopg2.connect(DATABASE_URL)
     except Exception as e:
         print("DB Connection Error:", e)
         raise
@@ -105,12 +99,12 @@ def upload():
             for file in files:
                 if file and file.filename != "":
                     if ENV == "local":
-            # Save locally
+                        # ✅ Save locally
                         filepath = os.path.join(app.config["UPLOAD_FOLDER"], file.filename)
                         file.save(filepath)
-                        image_names.append(filepath)
+                        image_names.append("/" + filepath)
                     else:
-                        # Upload to Cloudinary (production)
+                        # ✅ Upload to Cloudinary (production)
                         upload_result = cloudinary.uploader.upload(file)
                         image_url = upload_result.get("secure_url")
                         image_names.append(image_url)
@@ -188,4 +182,4 @@ def handle_message(msg):
 
 # ---------- RUN ----------
 if __name__ == "__main__":
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=(ENV == "local"))

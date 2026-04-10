@@ -4,3 +4,4 @@ database.db
 .env
 venv/
 .idea/
+static/git
